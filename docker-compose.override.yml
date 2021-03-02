@@ -1,0 +1,60 @@
+---
+
+version: '3'
+
+services:
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "make start"
+    volumes:
+      - .:/code/uberpopug
+      - /tmp:/tmp
+    depends_on:
+      - solargraph
+
+  # https://github.com/neoclide/coc-solargraph#configuration-options
+  # external server
+  solargraph:
+    build: .
+    command: "bundle exec solargraph socket --host=0.0.0.0 --port=7658"
+    ports:
+      - "7658:7658"
+    volumes:
+      - .:/code/uberpopug
+
+  spring:
+    build:.
+    command: bin/spring server
+    pid: host
+    volumes:
+      - .:/code/uberpopug
+      - /tmp:/tmp
+
+  # webpacker:
+  #   build: .
+  #   command: make webpacker
+  #   ports:
+  #     - "0.0.0.0:3035:3035"
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - .:/code/uberpopug
+
+  caddy:
+    image: caddy:2.3.0
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - "./Caddyfile:/etc/caddy/Caddyfile"
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+
+volumes:
+  caddy_data:
+  caddy_config:
