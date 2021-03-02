@@ -26,22 +26,20 @@ services:
       - .:/code/uberpopug
 
   spring:
-    build:.
+    build: .
     command: bin/spring server
     pid: host
     volumes:
       - .:/code/uberpopug
       - /tmp:/tmp
 
-  # webpacker:
-  #   build: .
-  #   command: make webpacker
-  #   ports:
-  #     - "0.0.0.0:3035:3035"
-  #   env_file:
-  #     - .env
-  #   volumes:
-  #     - .:/code/uberpopug
+  webpacker:
+    build: .
+    command: make webpacker
+    ports:
+      - "0.0.0.0:3035:3035"
+    volumes:
+      - .:/code/uberpopug
 
   caddy:
     image: caddy:2.3.0
